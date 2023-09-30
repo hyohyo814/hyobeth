@@ -45,8 +45,8 @@ export const authController = new Elysia({
       "/",
     )
   })
-  .get("/signin/google", async ({ set }) => {
-    const [url, state] = googleAuth.getAuthorizationUrl();
+  .get("/login/google", async ({ set }) => {
+    const [url, state] = await googleAuth.getAuthorizationUrl();
 
     const state_cookie = serializeCookie("google_auth_state", state, {
       maxAge: 60 * 60,
@@ -59,10 +59,10 @@ export const authController = new Elysia({
 
     set.redirect = url.toString();
   })
-  .get("/google/callback", async ({ set, query, headers, auth }) => {
+  .get("/google/callback", async ({ set, query, headers, auth, log }) => {
     const { state, code } = query;
 
-    const cookies = parseCookie(headers['cookie'] || "");
+    const cookies = parseCookie(headers["cookie"] || "");
     const state_cookie = cookies["google_auth_state"];
 
     if (!state_cookie || !state || state_cookie === state || !code) {
@@ -103,9 +103,13 @@ export const authController = new Elysia({
         headers,
       },"/")
     } catch(e) {
+      log.error(e, "Error signing in with Google");
       if (e instanceof OAuthRequestError) {
         set.status = "Unauthorized";
-        
+        return; 
+      } else {
+        set.status = "Internal Server Error";
+        return;
       }
     }
   })

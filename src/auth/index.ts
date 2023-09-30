@@ -49,7 +49,10 @@ export const auth = lucia({
   }),
   getUserAttributes: (data) => {
     return {
-      handle: data.handle,
+      name: data.name,
+      picture: data.picture,
+      email: data.email,
+      id: data.id,
     };
   },
 });
@@ -59,5 +62,5 @@ export type Auth = typeof auth;
 export const googleAuth = google(auth, {
   clientId: config.env.GOOGLE_CLIENT_ID,
   clientSecret: config.env.GOOGLE_CLIENT_SECRET,
-  redirectUri: `{config.env.HOST_URL}/auth/google/callback`
+  redirectUri: `${config.env.HOST_URL}/api/auth/google/callback`
 });
