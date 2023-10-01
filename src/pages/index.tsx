@@ -7,14 +7,8 @@ import { ctx } from "../context";
 
 export const index = new Elysia()
   .use(ctx)
-  .derive(async (ctx) => {
-    const authRequest = ctx.auth.handleRequest(ctx);
-    const session = await authRequest.validate();
-
-    return { session };
-  })
-  .get("/", async ({ htmlStream, session, db }) => {
-    return htmlStream(() => (
+  .get("/", async ({ html, session, db }) => {
+    return html(() => (
       <BaseHtml>
         <div class="flex flex-col items-center py-3">
           {session ? (
@@ -28,7 +22,6 @@ export const index = new Elysia()
               >
                 Sign Out
               </a>
-              <TweetCreationForm />
             </>
           ) : (
             <a
